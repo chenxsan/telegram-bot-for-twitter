@@ -55,10 +55,10 @@ You can also run your app inside IEx (Interactive Elixir) as:
 
     $ iex -S mix phx.server
 ```
-按提示操作，就能在 http://0.0.0.0:4000 上启动开发服务器。注意，Phoenix 默认使用 `root` 账号连接本地 MySQL 数据库，且密码为空 - 如果本地 MySQL 数据库用户不是 `root` 或密码不为空，则需要调整 `dev.exs` 中的配置项。
+按提示操作，就能在 http://0.0.0.0:4000 上启动开发服务器。
 
 ## 创建 telegram bot
 
-具体创建过程就不说了，创建出来的 telegram 机器人链接是 [http://t.me/tweet_for_me_bot](http://t.me/tweet_for_me_bot) - 当然，现在它什么都不会。
+具体[创建过程](https://core.telegram.org/bots#3-how-do-i-create-a-bot)这里略过不表。我创建出来的 telegram 机器人链接是 [https://t.me/tweet_for_me_bot](https://t.me/tweet_for_me_bot) - 当然，现在它什么都不会。
 
-在创建 telegram 机器人过程中会获得一串 `token`，后面会用这串 `token` 来设置一个 [webhook](https://core.telegram.org/bots/api#setwebhook) - 这样 telegram 会将机器人收到的消息全部转发到我的 webhook。
+创建 telegram 机器人过程中会获得一串 `token`，后面会用这串 `token` 来设置一个 [webhook](https://core.telegram.org/bots/api#setwebhook) - 这样 telegram 会将机器人收到的消息全部转发到我设定的 webhook。
