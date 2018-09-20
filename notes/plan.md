@@ -12,14 +12,14 @@
 
 ## 本地开发的问题
 
-在本地开发 telegram 发推机器人会有一个问题：webhook 必须是线上可访问的。而在开发阶段，Phoenix 服务运行在本地，互联网无法访问。
+在本地开发 telegram 发推机器人会有一个问题：webhook 必须是线上可访问的。而在开发阶段，Phoenix 服务运行在本地，外网无法访问到。
 
 我想到的解决办法是，使用线上 webhook，但收到 telegram 推送消息后转发给本地开发服务器。
 
 俩种方案：
 
 1.  Reverse ssh tunnel - 这个稳定性很差，墙内经常断，需要重连，严重影响开发体验
-2.  [ngrok](https://github.com/inconshreveable/ngrok) - 这个虽然被墙，但墙不是问题，而且据我的使用体验，ngrok 十分稳定，另外它还有可视化界面，便于我们查看请求与响应。
+2.  [ngrok](https://github.com/inconshreveable/ngrok) - 这个虽然被墙，但墙不是问题，而且据我的使用体验，ngrok 十分稳定，另外它还有可视化界面，便于我们查看请求与响应。当然，免费版的 ngrok 是有时限的，8 小时后就要重新创建。
 
 因此这里我将使用 ngrok。
 
