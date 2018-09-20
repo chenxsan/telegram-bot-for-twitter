@@ -59,6 +59,11 @@ You can also run your app inside IEx (Interactive Elixir) as:
 
 ## 创建 telegram bot
 
-具体[创建过程](https://core.telegram.org/bots#3-how-do-i-create-a-bot)这里略过不表。我创建出来的 telegram 机器人链接是 [https://t.me/tweet_for_me_bot](https://t.me/tweet_for_me_bot) - 当然，现在它什么都不会。
+我需要创建两个 telegram 机器人。一个用于开发，一个用于生产环境：
 
-创建 telegram 机器人过程中我们会获得一串 `token`，后面将用这串 `token` 来设置一个 [webhook](https://core.telegram.org/bots/api#setwebhook) - 这样 telegram 会将机器人收到的消息全部转发到我们设定的 webhook。
+1. [https://t.me/tweet_for_me_test_bot](https://t.me/tweet_for_me_test_bot) - 开发用途
+2. [https://t.me/tweet_for_me_bot](https://t.me/tweet_for_me_bot) - 生产环境使用
+
+具体[创建过程](https://core.telegram.org/bots#3-how-do-i-create-a-bot)这里略过不表。
+
+创建 telegram 机器人过程中我们会获得一串 `token`，后面将用这串 `token` 设置一个 [webhook](https://core.telegram.org/bots/api#setwebhook) - 这样 telegram 会将机器人收到的消息全部转发到 webhook。
