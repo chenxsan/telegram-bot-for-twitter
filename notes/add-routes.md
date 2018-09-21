@@ -42,7 +42,7 @@ end
 1. `from_id`
 2. `access_token`
 
-手写 Scheme？当然不，用 mix tasks 吧：
+手写 Scheme？当然不，用 [mix tasks](https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Context.html#content) 吧：
 
 ```sh
 $ mix phx.gen.context Accounts User users from_id:string:unique access_token:string
