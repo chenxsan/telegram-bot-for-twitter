@@ -66,3 +66,8 @@ config :tweet_bot, TweetBot.Repo,
 # Configures token for telegram bot
 config :telegram_bot,
   token: System.get_env("TELEGRAM_TOKEN")
+
+# Configures extwitter oauth
+config :extwitter, :oauth,
+  consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
+  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")
