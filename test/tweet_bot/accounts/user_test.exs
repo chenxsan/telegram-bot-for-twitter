@@ -15,4 +15,16 @@ defmodule TweetBot.UserTest do
     changeset = User.changeset(%User{}, @invalid_attrs)
     refute changeset.valid?
   end
+
+  test "from_id should be required" do
+    changeset = User.changeset(%User{}, @invalid_attrs)
+    assert %{from_id: ["不能留空"]} = errors_on(changeset)
+  end
+
+  test "from_id should be unique" do
+    changeset = User.changeset(%User{}, @valid_attrs)
+    assert Repo.insert!(changeset)
+    assert {:error, changeset} = Repo.insert(changeset)
+    assert %{from_id: ["已被占用"]} = errors_on(changeset)
+  end
 end
