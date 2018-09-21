@@ -5,7 +5,7 @@
 1. Consumer Key
 2. Consumer Secret
 
-记得需要配置 `Callback URLs` - 比如我后面将新建一个 `/auth_callback` 路由用于回调，则将 `Callback URLs` 设置为 `http://localhost:4000/auth_callback`。
+记得需要配置 [`Callback URLs`](https://developer.twitter.com/en/docs/basics/developer-portal/guides/callback-urls.html) - 比如开发环境下我将新建一个 `/auth_callback` 路由用于处理回调，则需要将 `http://127.0.0.1:4000/auth_callback` 加入 `Callback URLs`。
 
 接下来与 twitter 的一切通信都交给 [https://github.com/parroty/extwitter](https://github.com/parroty/extwitter) 库。
 
