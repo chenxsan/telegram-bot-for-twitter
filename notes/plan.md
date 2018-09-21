@@ -42,9 +42,9 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 ngrok 将会在本地 4000 端口与 ngrok 的随机公开网址间形成映射。
 
-接着访问下列网址，将 webhook 设置为 ngrok 随机生成的地址 https://fd80be0a.ngrok.io（注意必须是 https 网址）：
+接着访问下列网址，将 webhook 设置为 ngrok 随机生成的地址 `https://fd80be0a.ngrok.io`（注意必须是 https 网址）：
 
-> https://api.telegram.org/bot(token-here)/setwebhook?url=https://fd80be0a.ngrok.io/api/twitter
+> `https://api.telegram.org/bot(token-here)/setwebhook?url=https://fd80be0a.ngrok.io/api/twitter`
 
 目前，我们的 `/api/twitter` 路由还没有创建。
 
