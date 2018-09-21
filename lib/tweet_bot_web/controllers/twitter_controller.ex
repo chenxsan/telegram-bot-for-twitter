@@ -15,7 +15,7 @@ defmodule TweetBotWeb.TwitterController do
 
         sendMessage(
           from_id,
-          "请点击链接登录您的 Twitter 账号授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+          "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
           parse_mode: "HTML"
         )
 
