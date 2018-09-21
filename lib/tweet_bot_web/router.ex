@@ -18,6 +18,7 @@ defmodule TweetBotWeb.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
+    get("/auth_callback", AuthController, :callback)
   end
 
   # Other scopes may use custom stacks.
