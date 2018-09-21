@@ -48,6 +48,6 @@ ngrok 将会在本地 4000 端口与 ngrok 的随机公开网址间形成映射�
 
 目前，我们的 `/api/twitter` 路由还没有创建。
 
-之后本地开发服务器就能收到线上 webhook 转发来的 telegram 消息：
+之后本地开发服务器就能收到线上 webhook 转发来的 telegram 消息，如下图：
 
 ![ngrok web interface](./ngrok-web-interface.png)
