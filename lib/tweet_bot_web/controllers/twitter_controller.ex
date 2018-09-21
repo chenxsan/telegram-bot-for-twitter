@@ -8,7 +8,9 @@ defmodule TweetBotWeb.TwitterController do
       "/start" ->
         token =
           ExTwitter.request_token(
-            URI.encode_www_form(TweetBotWeb.Router.Helpers.auth_url(conn, :callback))
+            URI.encode_www_form(
+              TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
+            )
           )
 
         {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
