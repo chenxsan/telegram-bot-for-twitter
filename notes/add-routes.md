@@ -71,5 +71,13 @@ Finished in 0.2 seconds
 
 Randomized with seed 168024
 ```
-Cool，悉数通过。
+Cool，悉数通过。此时再运行 `mix ecto.migrate` 创建表：
+
+```sh
+$ mix ecto.migrate
+[info] == Running TweetBot.Repo.Migrations.CreateUsers.change/0 forward
+[info] create table users
+[info] create index users_from_id_index
+[info] == Migrated in 0.0s
+```
 
