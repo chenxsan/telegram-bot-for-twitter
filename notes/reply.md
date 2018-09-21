@@ -2,13 +2,13 @@
 
 服务器想要回复消息给用户的话，需要一个 telegram bot api 的 elixir 库，因为所需功能非常少，所以这里就用我以前写的一个简单的 [TelegramBot](https://github.com/chenxsan/TelegramBot) 库。
 
-在 `mix.exs` 文件 `deps` 中新增 `{:telegram_bot, "~>0.1.0}`：
+在 `mix.exs` 文件 `deps` 中新增 `{:telegram_bot, "~> 1.0.1}`：
 
 ```
        {:gettext, "~> 0.11"},
 -      {:cowboy, "~> 1.0"}
 +      {:cowboy, "~> 1.0"},
-+      {:telegram_bot, "~> 0.1.0"}
++      {:telegram_bot, "~>  1.0.1"}
      ]
 ```
 
