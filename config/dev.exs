@@ -11,8 +11,14 @@ config :tweet_bot, TweetBotWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin",
-                    cd: Path.expand("../assets", __DIR__)]]
+  watchers: [
+    node: [
+      "node_modules/brunch/bin/brunch",
+      "watch",
+      "--stdin",
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
 
 # ## SSL Support
 #
@@ -56,3 +62,7 @@ config :tweet_bot, TweetBot.Repo,
   database: "tweet_bot_dev",
   hostname: "localhost",
   pool_size: 10
+
+# Configures token for telegram bot
+config :telegram_bot,
+  token: System.get_env("TELEGRAM_TOKEN")
