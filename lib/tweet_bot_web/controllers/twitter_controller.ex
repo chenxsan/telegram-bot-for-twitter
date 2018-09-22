@@ -123,9 +123,12 @@ defmodule TweetBotWeb.TwitterController do
     try do
       ExTwitter.update(text)
     rescue
-      e in ExTwitter.Error -> sendMessage(conn.assigns.current_user, "#{e.message}")
+      e in ExTwitter.Error ->
+        json(conn, %{
+          "method" => "sendMessage",
+          "text" => e.message,
+          "chat_id" => conn.assigns.current_user
+        })
     end
-
-    json(conn, %{})
   end
 end
