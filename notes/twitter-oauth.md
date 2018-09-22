@@ -18,12 +18,10 @@
 +# Configures extwitter oauth
 +config :extwitter, :oauth, [
 +  consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
-+  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET"),
-+  access_token: "",
-+  access_token_secret: ""
++  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")
 +]
 ```
-我们从环境变量中读取 `consumer_key` 与 `consumer_secret` 的值，`access_token` 与 `access_token_secret` 值暂时留空，后面再动态设置。
+我们从环境变量中读取 `consumer_key` 与 `consumer_secret` 的值，`access_token` 与 `access_token_secret` 值暂时不设定，后面来动态设置。
 
 不过等一等，`access_token_secret`？我在 `User` 结构中可是只定义了 `access_token`。
 
