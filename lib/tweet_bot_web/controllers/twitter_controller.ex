@@ -23,13 +23,15 @@ defmodule TweetBotWeb.TwitterController do
 
         {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
 
-        sendMessage(
-          from_id,
-          "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
-          parse_mode: "HTML"
-        )
-
-        conn |> halt()
+        conn
+        |> json(%{
+          "method" => "sendMessage",
+          "chat_id" => from_id,
+          "text" =>
+            "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+          "parse_mode" => "HTML"
+        })
+        |> halt()
     end
   end
 
