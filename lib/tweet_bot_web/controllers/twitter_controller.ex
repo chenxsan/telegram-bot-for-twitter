@@ -53,11 +53,37 @@ defmodule TweetBotWeb.TwitterController do
   end
 
   def index(conn, %{"message" => %{"text" => "/start"}}) do
-    json(conn, %{
-      "method" => "sendMessage",
-      "text" => "已授权，请直接发送消息",
-      "chat_id" => conn.assigns.current_user
-    })
+    try do
+      ExTwitter.verify_credentials()
+
+      json(conn, %{
+        "method" => "sendMessage",
+        "text" => "已授权，请直接发送消息",
+        "chat_id" => conn.assigns.current_user
+      })
+    rescue
+      _ ->
+        %{"message" => %{"from" => %{"id" => from_id}}} = conn.params
+
+        token =
+          ExTwitter.request_token(
+            URI.encode_www_form(
+              TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
+            )
+          )
+
+        {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
+
+        conn
+        |> json(%{
+          "method" => "sendMessage",
+          "chat_id" => from_id,
+          "text" =>
+            "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+          "parse_mode" => "HTML"
+        })
+        |> halt()
+    end
   end
 
   def index(conn, %{"message" => %{"text" => "/z"}}) do
