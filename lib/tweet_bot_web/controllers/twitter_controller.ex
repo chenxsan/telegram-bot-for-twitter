@@ -37,7 +37,20 @@ defmodule TweetBotWeb.TwitterController do
     json(conn, %{})
   end
 
-  def index(conn, _) do
+  def index(conn, %{"message" => %{"text" => text}}) do
+    # 读取用户 token
+    user = Accounts.get_user_by_from_id!(conn.assigns.current_user)
+
+    ExTwitter.configure(
+      :process,
+      Enum.concat(
+        ExTwitter.Config.get_tuples(),
+        access_token: user.access_token,
+        access_token_secret: user.access_token_secret
+      )
+    )
+
+    ExTwitter.update(text)
     json(conn, %{})
   end
 end
