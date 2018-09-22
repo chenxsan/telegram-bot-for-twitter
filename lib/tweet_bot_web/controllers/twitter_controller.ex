@@ -32,28 +32,12 @@ defmodule TweetBotWeb.TwitterController do
     end
   end
 
-  def index(conn, %{"message" => %{"from" => %{"id" => from_id}, "text" => text}}) do
-    case text do
-      "/start" ->
-        token =
-          ExTwitter.request_token(
-            URI.encode_www_form(
-              TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
-            )
-          )
+  def index(conn, %{"message" => %{"text" => "/start"}}) do
+    sendMessage(conn.assigns.current_user, "已授权，请直接发送消息")
+    json(conn, %{})
+  end
 
-        {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
-
-        sendMessage(
-          from_id,
-          "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
-          parse_mode: "HTML"
-        )
-
-      _ ->
-        sendMessage(from_id, "你好")
-    end
-
+  def index(conn, _) do
     json(conn, %{})
   end
 end
