@@ -1,0 +1,56 @@
+# 删推
+
+人总会有犯错的时候，比如把不该发的内容发到 twitter，所以我决定给发推机器人加上删推功能。
+
+与 `/start` 命令类似，这个删推的命令是 `/z`。
+
+打开 `twitter_controller.ex`，新增代码如下：
+
+```elixir
+  def index(conn, %{"message" => %{"text" => "/z"}}) do
+    # 读取用户 token
+    user = Accounts.get_user_by_from_id!(conn.assigns.current_user)
+
+    ExTwitter.configure(
+      :process,
+      Enum.concat(
+        ExTwitter.Config.get_tuples(),
+        access_token: user.access_token,
+        access_token_secret: user.access_token_secret
+      )
+    )
+
+    [latest_tweet | _] = ExTwitter.user_timeline(count: 1)
+    ExTwitter.destroy_status(latest_tweet.id)
+    sendMessage(conn.assigns.current_user, "撤销成功")
+    json(conn, %{})
+  end
+```
+不过，`ExTwitter.configure` 代码在两处 `index` 中重复出现，我们可以将它提取到 plug 中：
+
+```elixir
+  defp configure_extwitter(conn, _) do
+    # 读取用户 token
+    user = Accounts.get_user_by_from_id!(conn.assigns.current_user)
+
+    ExTwitter.configure(
+      :process,
+      Enum.concat(
+        ExTwitter.Config.get_tuples(),
+        access_token: user.access_token,
+        access_token_secret: user.access_token_secret
+      )
+    )
+
+    conn
+  end
+```
+最后在 `twitter_controller.ex` 头部调用 plug：
+
+```elixir
+   import TelegramBot
+   alias TweetBot.Accounts
+   plug(:find_user)
++  plug(:configure_extwitter)
+```
+不过，这个方案是有缺陷的。拿 `def index(conn, %{"message" => %{"text" => "/start"}}) do` 来说，它并不与 twitter api 通信，也就没必要执行 `ExTwitter.configure`，而在我们新增的 plug 下，`ExTwitter.configure` 是一定会执行的。
