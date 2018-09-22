@@ -5,7 +5,7 @@ defmodule TweetBot.Accounts.User do
   schema "users" do
     field(:access_token, :string)
     field(:access_token_secret, :string)
-    field(:from_id, :string)
+    field(:from_id, :integer)
 
     timestamps()
   end
