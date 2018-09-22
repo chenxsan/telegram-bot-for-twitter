@@ -15,24 +15,7 @@ defmodule TweetBotWeb.TwitterController do
         assign(conn, :current_user, user.from_id)
 
       nil ->
-        token =
-          ExTwitter.request_token(
-            URI.encode_www_form(
-              TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
-            )
-          )
-
-        {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
-
-        conn
-        |> json(%{
-          "method" => "sendMessage",
-          "chat_id" => from_id,
-          "text" =>
-            "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
-          "parse_mode" => "HTML"
-        })
-        |> halt()
+        get_twitter_oauth(conn, from_id) |> halt()
     end
   end
 
@@ -65,24 +48,7 @@ defmodule TweetBotWeb.TwitterController do
       _ ->
         %{"message" => %{"from" => %{"id" => from_id}}} = conn.params
 
-        token =
-          ExTwitter.request_token(
-            URI.encode_www_form(
-              TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
-            )
-          )
-
-        {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
-
-        conn
-        |> json(%{
-          "method" => "sendMessage",
-          "chat_id" => from_id,
-          "text" =>
-            "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
-          "parse_mode" => "HTML"
-        })
-        |> halt()
+        get_twitter_oauth(conn, from_id) |> halt()
     end
   end
 
@@ -161,5 +127,24 @@ defmodule TweetBotWeb.TwitterController do
       e in ExTwitter.Error ->
         {:error, {:extwitter, e.message}}
     end
+  end
+
+  defp get_twitter_oauth(conn, from_id) do
+    token =
+      ExTwitter.request_token(
+        URI.encode_www_form(
+          TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
+        )
+      )
+
+    {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
+
+    conn
+    |> json(%{
+      "method" => "sendMessage",
+      "chat_id" => from_id,
+      "text" => "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+      "parse_mode" => "HTML"
+    })
   end
 end
