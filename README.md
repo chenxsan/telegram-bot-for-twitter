@@ -20,8 +20,8 @@
 12. [x] [发送图片](notes/tweet-photo.md)
 13. [x] [关于安全](notes/security.md)
 14. [x] [优化与修补](notes/optimize-and-fix.md)
-15. [x] [国际化](notes/i18n.md)
-16. [x] [部署](notes/deploy.md)
+15. [ ] [国际化](notes/i18n.md)
+16. [ ] [部署](notes/deploy.md)
 
 ## License
 
