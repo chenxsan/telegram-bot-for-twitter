@@ -62,7 +62,12 @@ defmodule TweetBotWeb.TwitterController do
   end
 
   def index(conn, %{"message" => %{"text" => text}}) do
-    ExTwitter.update(text)
+    try do
+      ExTwitter.update(text)
+    rescue
+      e in ExTwitter.Error -> sendMessage(conn.assigns.current_user, "#{e.message}")
+    end
+
     json(conn, %{})
   end
 end
