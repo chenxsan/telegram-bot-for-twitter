@@ -15,12 +15,13 @@
 7. [x] [保存用户](notes/save-user.md)
 8. [x] [用户授权了吗](notes/who-is-that.md)
 9. [x] [发推](notes/send-tweet.md)
-10. [x] [细节中藏着魔鬼](notes/demon-in-details.md)
-11. [x] [发送图片](notes/tweet-photo.md)
-12. [x] [关于安全](notes/security.md)
-13. [x] [优化与修补](notes/optimize-and-fix.md)
-14. [x] [国际化](notes/i18n.md)
-15. [x] [部署](notes/deploy.md)
+10. [x] [删推](notes/delete-tweet.md)
+11. [x] [细节中藏着魔鬼](notes/demon-in-details.md)
+12. [x] [发送图片](notes/tweet-photo.md)
+13. [x] [关于安全](notes/security.md)
+14. [x] [优化与修补](notes/optimize-and-fix.md)
+15. [x] [国际化](notes/i18n.md)
+16. [x] [部署](notes/deploy.md)
 
 ## License
 
