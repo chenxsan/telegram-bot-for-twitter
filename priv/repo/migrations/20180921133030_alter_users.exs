@@ -2,8 +2,9 @@ defmodule TweetBot.Repo.Migrations.AlterUsers do
   use Ecto.Migration
 
   def change do
-    alter table(:users) do
-      modify(:from_id, :integer)
-    end
+    execute(
+      "alter table users alter column from_id type integer using (from_id::integer)",
+      "alter table users alter column from_id type character varying(255)"
+    )
   end
 end
