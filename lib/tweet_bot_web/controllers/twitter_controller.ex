@@ -61,6 +61,64 @@ defmodule TweetBotWeb.TwitterController do
     json(conn, %{})
   end
 
+  def index(conn, %{"message" => %{"photo" => photo} = message}) do
+    caption = Map.get(message, "caption", "")
+
+    case getFile(photo |> Enum.at(-1) |> Map.get("file_id")) do
+      {:ok, file} ->
+        %HTTPoison.Response{body: body} =
+          HTTPoison.get!(
+            "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
+              file |> Map.get("file_path")
+            }",
+            []
+          )
+
+        try do
+          ExTwitter.update_with_media(caption, body)
+        rescue
+          e in ExTwitter.Error ->
+            sendMessage(conn.assigns.current_user, "#{e.message}")
+        end
+
+      {:error, {_, reason}} ->
+        sendMessage(conn.assigns.current_user, reason)
+    end
+
+    json(conn, %{})
+  end
+
+  # 处理 file 形式的图片
+  def index(conn, %{
+        "message" => %{"document" => %{"mime_type" => mime_type} = document} = message
+      })
+      when mime_type in ["image/png", "image/jpeg", "image/gif"] do
+    caption = Map.get(message, "caption", "")
+
+    case getFile(Map.get(document, "file_id")) do
+      {:ok, file} ->
+        %HTTPoison.Response{body: body} =
+          HTTPoison.get!(
+            "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
+              file |> Map.get("file_path")
+            }",
+            []
+          )
+
+        try do
+          ExTwitter.update_with_media(caption, body)
+        rescue
+          e in ExTwitter.Error ->
+            sendMessage(conn.assigns.current_user, "#{e.message}")
+        end
+
+      {:error, {_, reason}} ->
+        sendMessage(conn.assigns.current_user, reason)
+    end
+
+    json(conn, %{})
+  end
+
   def index(conn, %{"message" => %{"text" => text}}) do
     try do
       ExTwitter.update(text)
