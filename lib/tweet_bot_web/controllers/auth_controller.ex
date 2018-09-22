@@ -16,7 +16,7 @@ defmodule TweetBotWeb.AuthController do
            access_token_secret: token.oauth_token_secret
          }) do
       {:ok, _} -> text(conn, "授权成功，请关闭此页面")
-      {:error, reason} -> text(conn, "授权失败：#{reason}")
+      {:error, _changeset} -> text(conn, "授权失败")
     end
   end
 end
