@@ -10,13 +10,25 @@ defmodule TweetBotWeb.AuthController do
     # 获取 access token
     {:ok, token} = ExTwitter.access_token(oauth_verifier, oauth_token)
 
-    case Accounts.create_user(%{
-           from_id: from_id,
-           access_token: token.oauth_token,
-           access_token_secret: token.oauth_token_secret
-         }) do
-      {:ok, _} -> text(conn, "授权成功，请关闭此页面")
-      {:error, _changeset} -> text(conn, "授权失败")
+    case Accounts.get_user_by_from_id(from_id) do
+      user when not is_nil(user) ->
+        case Accounts.update_user(user, %{
+               access_token: token.oauth_token,
+               access_token_secret: token.oauth_token_secret
+             }) do
+          {:ok, _user} -> text(conn, "授权成功，请关闭此页面")
+          {:error, _changeset} -> text(conn, "授权失败。")
+        end
+
+      nil ->
+        case Accounts.create_user(%{
+               from_id: from_id,
+               access_token: token.oauth_token,
+               access_token_secret: token.oauth_token_secret
+             }) do
+          {:ok, _} -> text(conn, "授权成功，请关闭此页面")
+          {:error, _changeset} -> text(conn, "授权失败。")
+        end
     end
   end
 end

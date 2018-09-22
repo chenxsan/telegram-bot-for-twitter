@@ -1,0 +1,254 @@
+# 优化及修补
+
+在部署之前，我想对代码再做一些优化及修补。
+
+## 减少 telegram API 调用
+
+我们在前面提到过，telegram api 是有限制的，比如超过 30 次每秒，再调用就会报错。因此我很少调用 `sendMessage` 给用户发送消息。
+
+但从 [telegram 某处文档](https://core.telegram.org/bots/faq#how-can-i-make-requests-in-response-to-updates) 我们得知，webhook 在收到 telegram POST 的消息后，是可以直接响应指令的 - 等效于我们调用 `sendMessage`，唯一的问题是，响应之后，我们无法知道该响应中的指令是否成功。
+
+但我觉得值得一试。
+
+我们先做一小部分优化，验证下可行性：
+
+```elixir
+-      e in ExTwitter.Error -> sendMessage(conn.assigns.current_user, "#{e.message}")
++      e in ExTwitter.Error ->
++        json(conn, %{
++          "method" => "sendMessage",
++          "text" => e.message,
++          "chat_id" => conn.assigns.current_user
++        })
+     end
+-
+-    json(conn, %{})
+   end
+```
+
+测试后发现可行。
+
+我们可以将其它部分也做同样修改。
+
+这样，我们就基本不再调用 telegram 的 `sendMessage` api 了。
+
+## 捕捉 HTTPoison.get! 错误
+
+我们目前的 `twitter_controller.ex` 代码中并没有捕捉 `HTTPoison.get!` 可能发生的错误，改造一下我们的代码，将 `HTTPoison.get!` 移入 `try` 语句中：
+
+```elixir
+try do
+  %HTTPoison.Response{body: body} =
+    HTTPoison.get!(
+      "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
+        file |> Map.get("file_path")
+      }",
+      []
+    )
+
+  ExTwitter.update_with_media(caption, body)
+rescue
+  e in ExTwitter.Error ->
+    json(conn, %{
+      "method" => "sendMessage",
+      "text" => e.message,
+      "chat_id" => conn.assigns.current_user
+    })
+
+  e in HTTPoison.Error ->
+    json(conn, %{
+      "method" => "sendMessage",
+      "text" => e.reason,
+      "chat_id" => conn.assigns.current_user
+    })
+end
+```
+
+## action_fallback
+
+顾名思义，你可能已经猜出 `action_fallback` 的作用。
+
+首先，`action_fallback` 是一个 Plug，这意味着它至少定义了一个 `call` 函数。另外，它是 action 的 fallback，处理的是 action 未返回 `conn` 的情况，换句话说，一个 action 在函数末没有返回 `conn`，`action_fallback` 就会启动。
+
+那么，它的应用场景是什么？
+
+我们来看 `twitter_controller.ex` 文件，其中多处出现 `{:error, {_, reason}} ->` 的代码，我们不妨通过 `action_fallback` 来集中处理这些。
+
+首先在 `controllers` 目录下新增一个 `fallback_controller.ex`：
+
+```elixir
+defmodule FallbackController do
+  use Phoenix.Controller
+
+  def call(conn, {:error, {_, reason}}) do
+    json(conn, %{
+      "method" => "sendMessage",
+      "chat_id" => conn.assigns.current_user,
+      "text" => reason
+    })
+  end
+end
+```
+
+接着在 `twitter_controller.ex` 中引用 `action_fallback(FallbackController)`：
+
+```elixir
+   plug(:find_user)
+   plug(:configure_extwitter)
++  action_fallback(FallbackController)
+```
+
+最后清理掉 `twitter_controller.ex` 文件中如下代码：
+
+```elixir
+{:error, {_, reason}} ->
+  json(conn, %{
+    "method" => "sendMessage",
+    "chat_id" => conn.assigns.current_user,
+    "text" => reason
+  })
+```
+
+你看，我们在 `TwitterController` 中未处理的 `{:error, {_, reason}}` 都由 `FallbackController` 接手了 - 这样 `index` 可以更专注于处理正确的情况。
+
+同理，我们可以将 `rescue` 中的错误处理统一交 `FallbackController` 处理。
+
+## `/start` 命令
+
+我们的 `/start` 命令有一个 bug：
+
+1. 用户初次使用，发送 `/start`，授权成功后，数据库存储 token
+2. 用户到 twitter 设置中取消授权
+3. 用户再次发送 `/start` - 数据库存储的 token 其实已经失效，此时我们应该返回授权链接，而不是提示用户直接发送信息
+
+一个办法，是在接收到 `/start` 命令后检查 token 有效性来决定具体返回什么给用户：
+
+```elixir
+def index(conn, %{"message" => %{"text" => "/start"}}) do
+  try do
+    ExTwitter.verify_credentials()
+
+    json(conn, %{
+      "method" => "sendMessage",
+      "text" => "已授权，请直接发送消息",
+      "chat_id" => conn.assigns.current_user
+    })
+  rescue
+    _ ->
+      %{"message" => %{"from" => %{"id" => from_id}}} = conn.params
+
+      token =
+        ExTwitter.request_token(
+          URI.encode_www_form(
+            TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
+          )
+        )
+
+      {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
+
+      conn
+      |> json(%{
+        "method" => "sendMessage",
+        "chat_id" => from_id,
+        "text" =>
+          "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+        "parse_mode" => "HTML"
+      })
+      |> halt()
+  end
+end
+```
+
+不过，这样的 `index` 与 `find_user` 函数有大量重复，我们来优化一下 `twitter_controller.ex`。
+
+新增一个 `get_twitter_oauth` 方法：
+
+```elixir
+  defp get_twitter_oauth(conn, from_id) do
+    token =
+      ExTwitter.request_token(
+        URI.encode_www_form(
+          TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
+        )
+      )
+
+    {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
+
+    conn
+    |> json(%{
+      "method" => "sendMessage",
+      "chat_id" => from_id,
+      "text" => "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+      "parse_mode" => "HTML"
+    })
+  end
+```
+接着调整 `index` 与 `find_user`：
+
+```elixir
+-        token =
+-          ExTwitter.request_token(
+-            URI.encode_www_form(
+-              TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
+-            )
+-          )
+-
+-        {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
+-
+-        conn
+-        |> json(%{
+-          "method" => "sendMessage",
+-          "chat_id" => from_id,
+-          "text" =>
+-            "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+-          "parse_mode" => "HTML"
+-        })
+-        |> halt()
++        get_twitter_oauth(conn, from_id) |> halt()
+```
+
+## from_id 被占用
+
+我们前面描述了用户在 twitter 设置中取消授权的情形。是的，我们的代码现在能够检查数据库中 token 的有效性，然而用户再次授权时，代码里就会产生错误，这个错误来自：
+
+```elixir
+|> unique_constraint(:from_id, message: "已被占用")
+```
+怎么避免呢？也很简单，考虑两种情景：
+
+1. 用户已经存在的时候，数据插入应该调整为**更新**
+2. 用户不存在的时候，数据直接插入
+
+改造 `auth_controller` 代码如下：
+
+```elixir
+  def callback(conn, %{
+        "from_id" => from_id,
+        "oauth_token" => oauth_token,
+        "oauth_verifier" => oauth_verifier
+      }) do
+    # 获取 access token
+    {:ok, token} = ExTwitter.access_token(oauth_verifier, oauth_token)
+
+    case Accounts.get_user_by_from_id(from_id) do
+      user when not is_nil(user) ->
+        case Accounts.update_user(user, %{
+               access_token: token.oauth_token,
+               access_token_secret: token.oauth_token_secret
+             }) do
+          {:ok, _user} -> text(conn, "授权成功，请关闭此页面")
+          {:error, _changeset} -> text(conn, "授权失败。")
+        end
+
+      nil ->
+        case Accounts.create_user(%{
+               from_id: from_id,
+               access_token: token.oauth_token,
+               access_token_secret: token.oauth_token_secret
+             }) do
+          {:ok, _} -> text(conn, "授权成功，请关闭此页面")
+          {:error, _changeset} -> text(conn, "授权失败。")
+        end
+    end
+  end
+```
