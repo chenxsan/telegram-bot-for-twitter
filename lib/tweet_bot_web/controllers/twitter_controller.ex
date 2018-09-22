@@ -75,21 +75,28 @@ defmodule TweetBotWeb.TwitterController do
 
     case getFile(photo |> Enum.at(-1) |> Map.get("file_id")) do
       {:ok, file} ->
-        %HTTPoison.Response{body: body} =
-          HTTPoison.get!(
-            "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
-              file |> Map.get("file_path")
-            }",
-            []
-          )
-
         try do
+          %HTTPoison.Response{body: body} =
+            HTTPoison.get!(
+              "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
+                file |> Map.get("file_path")
+              }",
+              []
+            )
+
           ExTwitter.update_with_media(caption, body)
         rescue
           e in ExTwitter.Error ->
             json(conn, %{
               "method" => "sendMessage",
               "text" => e.message,
+              "chat_id" => conn.assigns.current_user
+            })
+
+          e in HTTPoison.Error ->
+            json(conn, %{
+              "method" => "sendMessage",
+              "text" => e.reason,
               "chat_id" => conn.assigns.current_user
             })
         end
@@ -114,21 +121,28 @@ defmodule TweetBotWeb.TwitterController do
 
     case getFile(Map.get(document, "file_id")) do
       {:ok, file} ->
-        %HTTPoison.Response{body: body} =
-          HTTPoison.get!(
-            "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
-              file |> Map.get("file_path")
-            }",
-            []
-          )
-
         try do
+          %HTTPoison.Response{body: body} =
+            HTTPoison.get!(
+              "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
+                file |> Map.get("file_path")
+              }",
+              []
+            )
+
           ExTwitter.update_with_media(caption, body)
         rescue
           e in ExTwitter.Error ->
             json(conn, %{
               "method" => "sendMessage",
               "text" => e.message,
+              "chat_id" => conn.assigns.current_user
+            })
+
+          e in HTTPoison.Error ->
+            json(conn, %{
+              "method" => "sendMessage",
+              "text" => e.reason,
               "chat_id" => conn.assigns.current_user
             })
         end
