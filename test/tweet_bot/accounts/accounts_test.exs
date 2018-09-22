@@ -6,8 +6,8 @@ defmodule TweetBot.AccountsTest do
   describe "users" do
     alias TweetBot.Accounts.User
 
-    @valid_attrs %{access_token: "some access_token", from_id: "some from_id"}
-    @update_attrs %{access_token: "some updated access_token", from_id: "some updated from_id"}
+    @valid_attrs %{access_token: "some access_token", from_id: 1}
+    @update_attrs %{access_token: "some updated access_token", from_id: 2}
     @invalid_attrs %{access_token: nil, from_id: nil}
 
     def user_fixture(attrs \\ %{}) do
@@ -32,7 +32,7 @@ defmodule TweetBot.AccountsTest do
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
       assert user.access_token == "some access_token"
-      assert user.from_id == "some from_id"
+      assert user.from_id == 1
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -44,7 +44,7 @@ defmodule TweetBot.AccountsTest do
       assert {:ok, user} = Accounts.update_user(user, @update_attrs)
       assert %User{} = user
       assert user.access_token == "some updated access_token"
-      assert user.from_id == "some updated from_id"
+      assert user.from_id == 2
     end
 
     test "update_user/2 with invalid data returns error changeset" do
