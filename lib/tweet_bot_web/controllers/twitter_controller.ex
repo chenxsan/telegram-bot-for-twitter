@@ -5,6 +5,7 @@ defmodule TweetBotWeb.TwitterController do
   alias TweetBot.Accounts
   plug(:find_user)
   plug(:configure_extwitter)
+  action_fallback(FallbackController)
 
   defp find_user(conn, _) do
     %{"message" => %{"from" => %{"id" => from_id}}} = conn.params
@@ -85,31 +86,15 @@ defmodule TweetBotWeb.TwitterController do
             )
 
           ExTwitter.update_with_media(caption, body)
+          json(conn, %{})
         rescue
           e in ExTwitter.Error ->
-            json(conn, %{
-              "method" => "sendMessage",
-              "text" => e.message,
-              "chat_id" => conn.assigns.current_user
-            })
+            {:error, {:extwitter, e.message}}
 
           e in HTTPoison.Error ->
-            json(conn, %{
-              "method" => "sendMessage",
-              "text" => e.reason,
-              "chat_id" => conn.assigns.current_user
-            })
+            {:error, {:httpoison, e.reason}}
         end
-
-      {:error, {_, reason}} ->
-        json(conn, %{
-          "method" => "sendMessage",
-          "text" => reason,
-          "chat_id" => conn.assigns.current_user
-        })
     end
-
-    json(conn, %{})
   end
 
   # 处理 file 形式的图片
@@ -131,43 +116,24 @@ defmodule TweetBotWeb.TwitterController do
             )
 
           ExTwitter.update_with_media(caption, body)
+          json(conn, %{})
         rescue
           e in ExTwitter.Error ->
-            json(conn, %{
-              "method" => "sendMessage",
-              "text" => e.message,
-              "chat_id" => conn.assigns.current_user
-            })
+            {:error, {:extwitter, e.message}}
 
           e in HTTPoison.Error ->
-            json(conn, %{
-              "method" => "sendMessage",
-              "text" => e.reason,
-              "chat_id" => conn.assigns.current_user
-            })
+            {:error, {:httpoison, e.reason}}
         end
-
-      {:error, {_, reason}} ->
-        json(conn, %{
-          "method" => "sendMessage",
-          "text" => reason,
-          "chat_id" => conn.assigns.current_user
-        })
     end
-
-    json(conn, %{})
   end
 
   def index(conn, %{"message" => %{"text" => text}}) do
     try do
       ExTwitter.update(text)
+      json(conn, %{})
     rescue
       e in ExTwitter.Error ->
-        json(conn, %{
-          "method" => "sendMessage",
-          "text" => e.message,
-          "chat_id" => conn.assigns.current_user
-        })
+        {:error, {:extwitter, e.message}}
     end
   end
 end
