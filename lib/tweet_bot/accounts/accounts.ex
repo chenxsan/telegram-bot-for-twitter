@@ -41,6 +41,10 @@ defmodule TweetBot.Accounts do
     Repo.get_by(User, from_id: from_id)
   end
 
+  def get_user_by_from_id!(from_id) do
+    Repo.get_by!(User, from_id: from_id)
+  end
+
   @doc """
   Creates a user.
 
