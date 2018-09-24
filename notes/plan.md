@@ -18,7 +18,7 @@
 俩种方案：
 
 1.  Reverse ssh tunnel - 这个稳定性很差，墙内经常断，需要重连，严重影响开发体验
-2.  [ngrok](https://github.com/inconshreveable/ngrok) - 这个虽然被墙，但墙不是问题，而且据我的使用体验，ngrok 十分稳定，另外它还有可视化界面，便于我们查看 http 请求与响应。当然，免费版的 ngrok 是有时限的，8 小时后就要重新创建。
+2.  [ngrok](https://github.com/inconshreveable/ngrok) - 这个虽然被墙，但墙不是问题，而且据我的使用体验，ngrok 十分稳定，另外它还有可视化界面，便于我们查看 http 请求与响应。
 
 权衡后，我选了 ngrok。
 
