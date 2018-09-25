@@ -7,6 +7,8 @@ defmodule TweetBotWeb.TwitterController do
   plug(:configure_extwitter)
   action_fallback(FallbackController)
 
+  @twitter_api Application.get_env(:tweet_bot, :twitter_api)
+
   defp find_user(conn, _) do
     %{"message" => %{"from" => %{"id" => from_id}}} = conn.params
 
@@ -131,13 +133,13 @@ defmodule TweetBotWeb.TwitterController do
 
   defp get_twitter_oauth(conn, from_id) do
     token =
-      ExTwitter.request_token(
+      @twitter_api.request_token(
         URI.encode_www_form(
           TweetBotWeb.Router.Helpers.auth_url(conn, :callback) <> "?from_id=#{from_id}"
         )
       )
 
-    {:ok, authenticate_url} = ExTwitter.authenticate_url(token.oauth_token)
+    {:ok, authenticate_url} = @twitter_api.authenticate_url(token.oauth_token)
 
     conn
     |> json(%{

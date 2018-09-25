@@ -17,3 +17,6 @@ config :tweet_bot, TweetBot.Repo,
   database: "tweet_bot_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :tweet_bot,
+  twitter_api: TwitterMock

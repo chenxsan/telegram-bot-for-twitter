@@ -14,14 +14,16 @@ config :tweet_bot, TweetBotWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "hLANbXMahFIMbsvWL363rXGHPhxMz0gy01IN5pmhEhirz7CMQySyKgM02o9ek9oS",
   render_errors: [view: TweetBotWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: TweetBot.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: TweetBot.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
+config :tweet_bot,
+  twitter_api: TwitterAPI
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"
