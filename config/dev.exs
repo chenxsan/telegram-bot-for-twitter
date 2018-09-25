@@ -73,7 +73,6 @@ config :extwitter, :oauth,
   consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")
 
 # Configures extwitter proxy
-config :extwitter, :proxy, [
+config :extwitter, :proxy,
   server: "127.0.0.1",
   port: 1087
-]
