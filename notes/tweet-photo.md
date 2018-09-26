@@ -148,4 +148,28 @@ end
   end
 ```
 
-你可以看到，新增的 `index` 跟处理 `photo` 的 `index` 有大量的重复代码 - 不过且放一边，我们后面找时间优化它们。
+你可以看到，新增的 `index` 跟处理 `photo` 的 `index` 有大量重复代码，很简单，我们将重复代码提取成函数：
+
+```elixir
+defp tweet_photo(conn, file, caption) do
+  try do
+    %HTTPoison.Response{body: body} =
+      HTTPoison.get!(
+        "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
+          file |> Map.get("file_path")
+        }",
+        []
+      )
+
+    ExTwitter.update_with_media(caption, body)
+    json(conn, %{})
+  rescue
+    e in ExTwitter.Error ->
+      {:error, {:extwitter, e.message}}
+
+    e in HTTPoison.Error ->
+      {:error, {:httpoison, e.reason}}
+  end
+end
+```
+然后去掉重复代码，将它们用 `tweet_photo` 函数替换。

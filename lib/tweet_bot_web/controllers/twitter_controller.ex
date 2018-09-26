@@ -70,24 +70,7 @@ defmodule TweetBotWeb.TwitterController do
 
     case getFile(photo |> Enum.at(-1) |> Map.get("file_id")) do
       {:ok, file} ->
-        try do
-          %HTTPoison.Response{body: body} =
-            HTTPoison.get!(
-              "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
-                file |> Map.get("file_path")
-              }",
-              []
-            )
-
-          ExTwitter.update_with_media(caption, body)
-          json(conn, %{})
-        rescue
-          e in ExTwitter.Error ->
-            {:error, {:extwitter, e.message}}
-
-          e in HTTPoison.Error ->
-            {:error, {:httpoison, e.reason}}
-        end
+        tweet_photo(conn, file, caption)
     end
   end
 
@@ -100,24 +83,7 @@ defmodule TweetBotWeb.TwitterController do
 
     case getFile(Map.get(document, "file_id")) do
       {:ok, file} ->
-        try do
-          %HTTPoison.Response{body: body} =
-            HTTPoison.get!(
-              "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
-                file |> Map.get("file_path")
-              }",
-              []
-            )
-
-          ExTwitter.update_with_media(caption, body)
-          json(conn, %{})
-        rescue
-          e in ExTwitter.Error ->
-            {:error, {:extwitter, e.message}}
-
-          e in HTTPoison.Error ->
-            {:error, {:httpoison, e.reason}}
-        end
+        tweet_photo(conn, file, caption)
     end
   end
 
@@ -145,8 +111,31 @@ defmodule TweetBotWeb.TwitterController do
     |> json(%{
       "method" => "sendMessage",
       "chat_id" => from_id,
-      "text" => gettext("Click link to sign in Twitter and authorize: ") <> "<a href='" <> authenticate_url <> "'>" <> gettext("Sign in with Twitter") <> "</a>",
+      "text" =>
+        gettext("Click link to sign in Twitter and authorize: ") <>
+          "<a href='" <> authenticate_url <> "'>" <> gettext("Sign in with Twitter") <> "</a>",
       "parse_mode" => "HTML"
     })
+  end
+
+  defp tweet_photo(conn, file, caption) do
+    try do
+      %HTTPoison.Response{body: body} =
+        HTTPoison.get!(
+          "https://api.telegram.org/file/bot#{Application.get_env(:telegram_bot, :token)}/#{
+            file |> Map.get("file_path")
+          }",
+          []
+        )
+
+      ExTwitter.update_with_media(caption, body)
+      json(conn, %{})
+    rescue
+      e in ExTwitter.Error ->
+        {:error, {:extwitter, e.message}}
+
+      e in HTTPoison.Error ->
+        {:error, {:httpoison, e.reason}}
+    end
   end
 end
