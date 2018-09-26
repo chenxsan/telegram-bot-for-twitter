@@ -145,7 +145,7 @@ defmodule TweetBotWeb.TwitterController do
     |> json(%{
       "method" => "sendMessage",
       "chat_id" => from_id,
-      "text" => "请点击链接登录您的 Twitter 账号进行授权：<a href='" <> authenticate_url <> "'>登录 Twitter</a>",
+      "text" => gettext("Click link to sign in Twitter and authorize: ") <> "<a href='" <> authenticate_url <> "'>" <> gettext("Sign in with Twitter") <> "</a>",
       "parse_mode" => "HTML"
     })
   end
