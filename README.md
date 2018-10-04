@@ -22,6 +22,7 @@
 14. [x] [优化与修补](notes/optimize-and-fix.md)
 15. [x] [测试](notes/more-tests.md)
 16. [x] [部署 Phoenix Framework](notes/deploy.md)
+17. [x] [高可用](notes/high-availability.md)
 
 ## License
 
