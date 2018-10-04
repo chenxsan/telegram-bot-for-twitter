@@ -4,6 +4,11 @@
 
 最近发现又有这个需求，就打算用 [Phoenix Framework](https://github.com/phoenixframework/phoenix) 实现一遍。
 
+1. Elixir 1.7.3
+2. OTP 21.0.9
+3. Phoenix Framework 1.3.4
+4. PostgreSQL
+
 ## 目录
 
 1. [x] [准备工作](notes/ready-go.md)
