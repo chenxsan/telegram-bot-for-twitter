@@ -1,1 +1,13 @@
 /* This file is for your main application css. */
+.leading {
+  padding: 40px 15px;
+  text-align: center;
+}
+.main {
+  margin-top: 100px;
+}
+@media (min-width: 768px) {
+  .main {
+    margin-top: 0;
+  }
+}
