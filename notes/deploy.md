@@ -2,12 +2,12 @@
 
 据我所知，Phoenix 项目的部署方案有俩种：
 
-1. [Phoenix 文档](https://hexdocs.pm/phoenix/deployment.html#content)中介绍的，将源代码推送到生产环境，安装依赖后跑 `MIX_ENV=prod mix phx.server`
+1. [Phoenix 文档](https://hexdocs.pm/phoenix/deployment.html#content)中介绍的，将源代码推送到生产环境，安装依赖后运行 `MIX_ENV=prod mix phx.server`
 2. 使用 [`distillery`](https://github.com/bitwalker/distillery) 构建 Erlang/OTP 发行包，然后部署发行包
 
 第一种方案直观、简单，与开发环境的体验一致。然而第二种方案才是我们应该使用的部署方案，因为能够享有 OTP 的一切好处，但过程并不简单，至少目前是这样。
 
-这里用的是第二种方案。
+这里聊的是第二种方案。
 
 ## 安装 distillery
 
@@ -19,9 +19,9 @@
    end
 ```
 
-然后运行 `mix deps.get` 安装依赖。
+然后运行 `mix deps.get` 安装 `distillery`。
 
-安装完依赖后，运行 `mix release.init` 来初始化构建配置：
+安装完 `distillery` 后，运行 `mix release.init` 来初始化构建：
 
 ```sh
 $ mix release.init
@@ -104,7 +104,7 @@ Distillery 从 2.0 版本开始，提供了 [Config providers](https://hexdocs.p
   )
 ```
 
-`overlays` 表示将 `config` 目录下的 `prod.exs` 拷贝至 `etc/config.exs` 位置，而 `config_providers` 则指定 Config providers 从何处读取配置 - 注意，这一过程是动态的，这也是为什么 `System.get_env` 能够从生产环境中读取变量，而不是从构建环境中读取。
+`overlays` 表示将 `config` 目录下的 `prod.exs` 拷贝至 `etc/config.exs` 位置，而 `config_providers` 则指定 Config providers 从何处读取配置。
 
 此外，我们还需要针对 Phoenix [调整 `prod.exs` 里的一些配置](https://hexdocs.pm/distillery/guides/phoenix_walkthrough.html)：
 
@@ -267,12 +267,13 @@ $RELEASE_ROOT_DIR/bin/tweet_bot seed
   )
 + set(pre_start_hooks: "rel/hooks/pre_start")
 ```
+这样应用在启动前会自动执行 migrate 与 seed 命令。
 
 ## 构建
 
-在完成以上配置后，我们终于可以开始构建 Phoenix 程序了。
+在完成以上配置后，我们终于可以开始构建 Phoenix 程序。
 
-我们来运行 `MIX_ENV=prod mix release` 试试：
+运行 `MIX_ENV=prod mix release` 试试：
 
 ```sh
 $ MIX_ENV=prod mix release
@@ -319,9 +320,9 @@ For a complete listing of commands and their use:
 
 ### Docker 中构建 Phoenix 应用
 
-因为我的程序最终将部署到 Ubuntu 16.04 系统，所以我需要准备一个基于 Ubuntu 16.04 的 [docker image](https://hub.docker.com/r/chenxsan/elixir-ubuntu/)，其中已安装好 Erlang 及 Elixir 等构建所需的依赖。
+因为我的程序最终将部署到 Ubuntu 16.04 系统，所以我需要准备一个基于 Ubuntu 16.04 的 [docker image](https://hub.docker.com/r/chenxsan/elixir-ubuntu/)，其中已安装好 Erlang 及 Elixir 等构建 Phoenix 所需的依赖。
 
-参考 [Distillery 文档](https://hexdocs.pm/distillery/guides/building_in_docker.html#building-releases)在项目根目录新建一个 `bin` 文件夹，并在 `bin` 目录下新建 `build.sh` 文件，注意要执行 `chmod +x bin/build.sh` 让它变为可执行：
+参考 [Distillery 文档](https://hexdocs.pm/distillery/guides/building_in_docker.html#building-releases)在项目根目录新建一个 `bin` 文件夹，并在 `bin` 目录下新建 `build.sh` 文件，注意要执行 `chmod +x bin/build.sh` 让它可执行：
 
 ```sh
 #!/usr/bin/env bash
@@ -360,25 +361,25 @@ exit 0
 $ docker run -v $(pwd):/opt/build --rm -it chenxsan/elixir-ubuntu:latest /opt/build/bin/build.sh
 ```
 
-我们就得到 `tweet_bot.tar.gz` 压缩包。
+之后我们就得到 `tweet_bot.tar.gz` 压缩包。
 
-接下来，就是部署 `tweet_bot.tar.gz`。
+接下来是部署 `tweet_bot.tar.gz`。
 
 ## 搭建生产环境
 
 我们可借助 Terraform、Ansible 一类运维工具准备生产环境，但这里不打算谈这类工具的使用，因为会增加笔记的复杂度。
 
-我们需要一台安装了 Ubuntu 16.04 的服务器，然后在服务器上安装 [Caddy](https://caddyserver.com)：
+我们创建一台安装了 Ubuntu 16.04 的服务器，然后在服务器上安装 [Caddy](https://caddyserver.com)：
 
 ```sh
 $ CADDY_TELEMETRY=on curl https://getcaddy.com | bash -s personal http.ipfilter,http.ratelimit
 ```
 
-之所以选了 Caddy 而不是 Nginx、Apache，是因为我不想折腾 Let's Encrypt。
+之所以选择 Caddy 而不是 Nginx、Apache，是因为我不想折腾 Let's Encrypt。
 
 ## 启动
 
-在启动程序前，我们需要事先创建生产环境数据库，并且还需要配置以下环境变量：
+在启动程序前，我们需要事先创建生产环境数据库，并且配置以下环境变量：
 
 1. PORT
 2. TELEGRAM_TOKEN
@@ -403,7 +404,7 @@ $ PORT=4200 bin/tweet_bot start
 新建一个 `Caddyfile`，文件内容如下：
 
 ```Caddyfile
-tweetbot.zfanw.com {
+https://tweetbot.zfanw.com {
   proxy / localhost:4200
   ipfilter /api/twitter {
     rule allow
@@ -415,7 +416,7 @@ tweetbot.zfanw.com {
 然后启动 caddy：
 
 ```
-$ caddy
+$ caddy -conf ./Caddyfile
 Activating privacy features... done.
 https://tweetbot.zfanw.com
 http://tweetbot.zfanw.com
@@ -427,9 +428,9 @@ http://tweetbot.zfanw.com
 
 ## 验证
 
-部署完成后，验证发现一个问题：生产环境的 OAuth 回调地址同样是 `localhost:4000/auth_callback`
+部署完成后，验证发推机器人发现一个问题：生产环境的 OAuth 回调地址同样是 `localhost:4000/auth_callback`
 
-这个问题非常好解决，调整 `prod.exs` 即可：
+这个问题非常好解决，调整 `prod.exs` 中的 `url` 即可：
 
 ```elixir
    http: [port: {:system, "PORT"}],
