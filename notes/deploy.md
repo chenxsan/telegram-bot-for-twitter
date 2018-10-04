@@ -372,7 +372,7 @@ $ docker run -v $(pwd):/opt/build --rm -it chenxsan/elixir-ubuntu:latest /opt/bu
 我们创建一台安装了 Ubuntu 16.04 的服务器，然后在服务器上安装 [Caddy](https://caddyserver.com)：
 
 ```sh
-$ CADDY_TELEMETRY=on curl https://getcaddy.com | bash -s personal http.ipfilter,http.ratelimit
+$ curl https://getcaddy.com | bash -s personal http.ipfilter,http.ratelimit
 ```
 
 之所以选择 Caddy 而不是 Nginx、Apache，是因为我不想折腾 Let's Encrypt。
