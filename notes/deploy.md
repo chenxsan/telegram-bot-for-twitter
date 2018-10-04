@@ -417,10 +417,18 @@ https://tweetbot.zfanw.com {
 
 ```
 $ caddy -conf ./Caddyfile
-Activating privacy features... done.
-https://tweetbot.zfanw.com
-http://tweetbot.zfanw.com
 ```
+但我们会看到如下警示：
+
+> WARNING: File descriptor limit 1024 is too low for production servers. At least 8192 is recommended. Fix with "ulimit -n 8192"
+
+解决办法很简单，我们可以在运行 `caddy` 前运行 `ulimit -n 8192`，但这只是临时性的。要让它永久生效，我们需要调整 `/etc/security/limits.conf`，在末尾新增两行：
+
+```conf
+* soft nofile 20000
+* hard nofile 20000
+```
+之后重新连接服务器，并执行 `caddy -conf ./Caddyfile`。
 
 ## 设定 webhook
 
