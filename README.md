@@ -21,7 +21,7 @@
 13. [x] [关于安全](notes/security.md)
 14. [x] [优化与修补](notes/optimize-and-fix.md)
 15. [x] [测试](notes/more-tests.md)
-16. [ ] [部署](notes/deploy.md)
+16. [x] [部署 Phoenix Framework](notes/deploy.md)
 
 ## License
 
