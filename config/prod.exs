@@ -15,7 +15,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :tweet_bot, TweetBotWeb.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "tweetbot.zfanw.com", port: {:system, "PORT"}],
+  url: [scheme: "https", host: "tweetbot.zfanw.com"],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",
