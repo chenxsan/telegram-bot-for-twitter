@@ -443,7 +443,7 @@ $ caddy -conf ./Caddyfile
 ```elixir
    http: [port: {:system, "PORT"}],
 -  url: [host: "localhost", port: {:system, "PORT"}],
-+  url: [scheme: "https", host: "tweetbot.zfanw.com"],
++  url: [scheme: "https", host: "tweetbot.zfanw.com", port: 443],
    cache_static_manifest: "priv/static/cache_manifest.json",
 ```
 
