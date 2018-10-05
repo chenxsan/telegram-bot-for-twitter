@@ -436,7 +436,7 @@ $ caddy -conf ./Caddyfile
 
 ## 验证
 
-部署完成后，验证发推机器人发现一个问题：生产环境的 OAuth 回调地址同样是 `localhost:4000/auth_callback`
+部署完成后，验证发推机器人发现一个问题：生产环境的 OAuth 回调地址同样是 `localhost:4000/auth_callback`，而我们需要的是 `https://tweetbot.zfanw.com/auth_callback`。
 
 这个问题非常好解决，调整 `prod.exs` 中的 `url` 即可：
 
