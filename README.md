@@ -1,4 +1,4 @@
-# Phoenix Framework 开发笔记
+# Phoenix Framework 开发 telegram 发推机器人笔记
 
 我用 Node.js 写过一个简单的 telegram 发推机器人，但后面整理硬盘时，删掉了代码 - 包括 Github 仓库上的一份。
 
