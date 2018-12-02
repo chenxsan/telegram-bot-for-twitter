@@ -1,6 +1,6 @@
 <div class="leading">
   <h1>Telegram bot for tweeting only</h1>
-  <p>/z to delete your latest tweet</p>
+  <p><strong class="text-danger">/z</strong> to delete your latest tweet</p>
 </div>
 
 <div class="row marketing">
