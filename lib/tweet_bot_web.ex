@@ -37,7 +37,8 @@ defmodule TweetBotWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import TweetBotWeb.Router.Helpers
+      # import TweetBotWeb.Router.Helpers
+      alias TweetBotWeb.Router.Helpers, as: Routes
       import TweetBotWeb.ErrorHelpers
       import TweetBotWeb.Gettext
     end

@@ -6,7 +6,7 @@
 
 1. Elixir 1.7.3
 2. OTP 21.0.9
-3. Phoenix Framework 1.3.4
+3. Phoenix Framework 1.4.0
 4. PostgreSQL
 
 ## 目录
