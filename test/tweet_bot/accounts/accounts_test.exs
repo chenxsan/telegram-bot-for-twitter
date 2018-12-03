@@ -10,6 +10,18 @@ defmodule TweetBot.AccountsTest do
     @update_attrs %{access_token: "some updated access_token", from_id: 2}
     @invalid_attrs %{access_token: nil, from_id: nil}
 
+    test "from_id should be required" do
+      changeset = User.changeset(%User{}, @valid_attrs |> Map.delete(:from_id))
+      refute changeset.valid?
+      assert %{from_id: ["can't be blank"]} = errors_on(changeset)
+    end
+
+    test "from_id should be unique" do
+      assert {:ok, _} = Accounts.create_user(@valid_attrs)
+      assert {:error, changeset} = Accounts.create_user(@valid_attrs)
+      assert %{from_id: ["has already been taken"]} = errors_on(changeset)
+    end
+
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =
         attrs

@@ -23,6 +23,7 @@ defmodule TweetBotWeb do
       import Plug.Conn
       import TweetBotWeb.Router.Helpers
       import TweetBotWeb.Gettext
+      alias TweetBotWeb.Router.Helpers, as: Routes
     end
   end
 

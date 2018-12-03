@@ -14,7 +14,7 @@ defmodule TweetBot.Accounts.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:from_id, :access_token, :access_token_secret])
-    |> validate_required([:from_id], message: "不能留空")
-    |> unique_constraint(:from_id, message: "已被占用")
+    |> validate_required([:from_id, :access_token])
+    |> unique_constraint(:from_id)
   end
 end
