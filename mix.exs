@@ -47,7 +47,8 @@ defmodule TweetBot.Mixfile do
       {:extwitter, "~> 0.9.3"},
       {:distillery, "~> 2.0"},
       {:mox, "~> 0.4", only: :test},
-      {:jason, "~> 1.0"}
+      {:jason, "~> 1.0"},
+      {:poison, "~> 3.1"}
     ]
   end
 
