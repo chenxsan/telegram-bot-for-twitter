@@ -23,7 +23,7 @@
               <a class="nav-link" href="https://t.me/tweet_for_me_bot">Get started</a>
             </li>
             <li class="nav-item">
-              <%= link "Notes", to: Routes.static_path(@conn, "/notes/README.html"), class: "nav-link" %>
+              <%= link "Notes", to: Routes.static_path(@conn, "/docs/README.html"), class: "nav-link" %>
             </li>
           </ul>
         </nav>
