@@ -2,7 +2,7 @@
 
 set -e
 
-cd /opt/build
+cd /opt/build/app
 
 APP_NAME="$(grep 'app:' mix.exs | sed -e 's/\[//g' -e 's/ //g' -e 's/app://' -e 's/[:,]//g')"
 APP_VSN="$(grep 'version:' mix.exs | cut -d '"' -f2)"
