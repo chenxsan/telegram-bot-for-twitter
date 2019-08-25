@@ -42,7 +42,8 @@ config :tweet_bot, TweetBot.Repo,
   password: System.get_env("DATABASE_PASS"),
   database: System.get_env("DATABASE_NAME"),
   hostname: System.get_env("DATABASE_HOST"),
-  pool_size: 3
+  pool_size: 3,
+  show_sensitive_data_on_connection_error: true
 
 # ## SSL Support
 #
