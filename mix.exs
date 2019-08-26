@@ -4,13 +4,18 @@ defmodule TweetBot.Mixfile do
   def project do
     [
       app: :tweet_bot,
-      version: "0.0.5",
+      version: "0.0.6",
       elixir: "~> 1.4",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: [
+        tweet_bot: [
+          include_executables_for: [:unix]
+        ]
+      ]
     ]
   end
 
