@@ -1,5 +1,5 @@
 defmodule TweetBot.Repo do
-  use Ecto.Repo, otp_app: :tweet_bot
+  use Ecto.Repo, otp_app: :tweet_bot, adapter: Ecto.Adapters.Postgres
 
   @doc """
   Dynamically loads the repository url from the
