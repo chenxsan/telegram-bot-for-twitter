@@ -24,6 +24,11 @@ config :tweet_bot, TweetBotWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+# Configure your database
+config :tweet_bot, TweetBot.Repo,
+  pool_size: 3,
+  show_sensitive_data_on_connection_error: true
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
