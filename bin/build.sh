@@ -7,8 +7,6 @@ cd /opt/build/app
 APP_NAME="$(grep 'app:' mix.exs | sed -e 's/\[//g' -e 's/ //g' -e 's/app://' -e 's/[:,]//g')"
 APP_VSN="$(grep 'version:' mix.exs | cut -d '"' -f2)"
 
-mkdir -p /opt/build/rel/artifacts
-
 export MIX_ENV=prod
 
 # Fetch deps and compile
@@ -21,8 +19,9 @@ npm run deploy
 cd ..
 mix phx.digest
 # Build the release
-mix release --env=prod
+mix release
+
 # Copy tarball to output
-cp "_build/prod/rel/$APP_NAME/releases/$APP_VSN/$APP_NAME.tar.gz" rel/artifacts/"$APP_NAME-$APP_VSN.tar.gz"
+# cp "_build/prod/rel/$APP_NAME/releases/$APP_VSN/$APP_NAME.tar.gz" rel/artifacts/"$APP_NAME-$APP_VSN.tar.gz"
 
 exit 0
