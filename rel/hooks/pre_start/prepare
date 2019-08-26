@@ -1,3 +1,0 @@
-$RELEASE_ROOT_DIR/bin/tweet_bot migrate
-
-$RELEASE_ROOT_DIR/bin/tweet_bot seed
